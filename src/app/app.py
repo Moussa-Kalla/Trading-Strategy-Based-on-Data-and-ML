@@ -1,8 +1,14 @@
+import sys
+import os
+
+# Ajouter le chemin du projet au PYTHONPATH
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+
 import dash
 from dash import dcc, html
 import pandas as pd
 import plotly.express as px
-from pnl_calculator import calculate_pnl, performance_summary
+from src.strategy.pnl_calculator import calculate_pnl, performance_summary
 from src.visualization.plot_results import plot_cumulative_pnl, plot_pnl_distribution
 
 # Charger les données
