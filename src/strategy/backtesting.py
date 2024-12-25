@@ -32,6 +32,7 @@ def backtest_strategy(df, take_profit_pct, stop_loss_pct):
             ):
                 df.loc[i, 'PnL'] = entry_price - df.loc[i, 'close']
                 current_position = None
-
+                
+    df.dropna(subset=['low', 'Take_Profit'], inplace=True)
     df['Cumulative_PnL'] = df['PnL'].cumsum()
     return df

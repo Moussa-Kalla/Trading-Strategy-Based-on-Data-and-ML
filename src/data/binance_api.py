@@ -26,3 +26,11 @@ def get_historical_data(symbol, timeframe, start_date, end_date):
 
     full_data = pd.concat(all_data, ignore_index=True)
     return full_data
+
+symbol = "BTC/USDT"
+timeframe = "30m"  
+start_date = "2010-11-30T00:00:00Z"  # Format complet avec année, mois, jour, heure et minute
+end_date = "2024-11-30T23:59:59Z"  # Format complet avec année, 
+
+df = get_historical_data(symbol, timeframe, start_date, end_date)
+df.to_csv('data/processed/historical_data.csv')

@@ -9,18 +9,20 @@ from dash import dcc, html
 import pandas as pd
 import plotly.express as px
 from src.strategy.pnl_calculator import calculate_pnl, performance_summary
+from src.strategy.strategy import strategy_1
+from src.strategy.backtesting import backtest_strategy
 from src.data.binance_api import get_historical_data
 from src.visualization.plot_results import plot_cumulative_pnl, plot_pnl_distribution
 
 # Charger les données
-symbol = "BTC/USDT"
-timeframe = "30m"  
-start_date = "2010-11-30T00:00:00Z"  # Format complet avec année, mois, jour, heure et minute
-end_date = "2024-11-30T23:59:59Z"  # Format complet avec année, 
-
-df = get_historical_data(symbol, timeframe, start_date, end_date)
-df.to_csv('data/processed/historical_data.csv')
 df = pd.read_csv('data/processed/historical_data.csv')
+
+# Appliquer la stratégie
+taille_bougie=0.5
+take_profit_pct = taille_bougie - 0.2
+stop_loss_pct = taille_bougie - 0.2
+df = strategy_1(df, taille_bougie=taille_bougie)
+df = backtest_strategy(df, take_profit_pct, stop_loss_pct)
 
 # Calculer les PnL et la stratégie
 df = calculate_pnl(df)
