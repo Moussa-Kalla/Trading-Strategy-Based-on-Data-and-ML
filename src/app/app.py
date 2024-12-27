@@ -18,7 +18,7 @@ from src.visualization.plot_results import plot_cumulative_pnl, plot_pnl_distrib
 df = pd.read_csv('data/processed/historical_data.csv')
 
 # Appliquer la stratégie
-taille_bougie=0.5
+taille_bougie=0.6
 take_profit_pct = taille_bougie - 0.2
 stop_loss_pct = taille_bougie - 0.2
 df = strategy_1(df, taille_bougie=taille_bougie)
