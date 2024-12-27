@@ -28,7 +28,7 @@ def get_historical_data(symbol, timeframe, start_date, end_date):
     return full_data
 
 symbol = "BTC/USDT"
-timeframe = "30m"  
+timeframe = "1h"  
 start_date = "2010-11-30T00:00:00Z"  # Format complet avec année, mois, jour, heure et minute
 end_date = "2024-11-30T23:59:59Z"  # Format complet avec année, 
 
