@@ -1,14 +1,18 @@
 import pandas as pd
 
 def strategy_1(df, taille_bougie):
+    # Calculate percentage variation for each candlestick
     df['variation'] = 100 * (df['close'] - df['open']) / df['open']
     df['Signal'] = 0
+    # Generate signals: 1 for buy and -1 for sell based on variation thresholds
     df.loc[df['variation'] > taille_bougie, 'Signal'] = -1
     df.loc[df['variation'] < -taille_bougie, 'Signal'] = 1
+    # Shift signal to avoid lookahead bias
     df['Signal'] = df['Signal'].shift(1)
     return df
 
 def backtest_strategy(df, take_profit_pct, stop_loss_pct):
+    # Initialize backtesting columns
     df['Take_Profit'] = None
     df['Stop_Loss'] = None
     df['Position_Closed'] = False
@@ -19,6 +23,7 @@ def backtest_strategy(df, take_profit_pct, stop_loss_pct):
 
     for i in range(len(df)):
         if current_position is None:
+            # Enter a position based on the generated signal
             if df.loc[i, 'Signal'] == 1:
                 current_position = 'long'
                 entry_price = df.loc[i, 'close']
@@ -30,6 +35,7 @@ def backtest_strategy(df, take_profit_pct, stop_loss_pct):
                 df.loc[i, 'Take_Profit'] = entry_price * (1 - take_profit_pct)
                 df.loc[i, 'Stop_Loss'] = entry_price * (1 + stop_loss_pct)
         else:
+            # Check conditions to close the current open position
             if current_position == 'long' and (
                 (df.loc[i, 'high'] >= df.loc[i-1, 'Take_Profit']) or 
                 (df.loc[i, 'low'] <= df.loc[i-1, 'Stop_Loss'])
@@ -47,34 +53,8 @@ def backtest_strategy(df, take_profit_pct, stop_loss_pct):
     df['Cumulative_PnL'] = df['PnL'].cumsum()
     return df
 
-def calculate_pnl(df):
-    df['PnL'] = 0
-    df['Cumulative_PnL'] = 0
-
-    current_position = None
-    entry_price = None
-
-    for i in range(len(df)):
-        if current_position is None:
-            if df.loc[i, 'Signal'] == 1:
-                current_position = 'long'
-                entry_price = df.loc[i, 'close']
-            elif df.loc[i, 'Signal'] == -1:
-                current_position = 'short'
-                entry_price = df.loc[i, 'close']
-        else:
-            if df.loc[i, 'Position_Closed']:
-                if current_position == 'long':
-                    df.loc[i, 'PnL'] = df.loc[i, 'close'] - entry_price
-                elif current_position == 'short':
-                    df.loc[i, 'PnL'] = entry_price - df.loc[i, 'close']
-                current_position = None
-                entry_price = None
-
-    df['Cumulative_PnL'] = df['PnL'].cumsum()
-    return df
-
 def performance_summary(df):
+    # Generate basic performance statistics for the strategy
     total_profit = df['PnL'].sum()
     winning_trades = df[df['PnL'] > 0]['PnL'].count()
     losing_trades = df[df['PnL'] < 0]['PnL'].count()
